@@ -1,45 +1,226 @@
 ---
-title: Introduction
-description: Give readers a clear path from their first question to a result they can verify.
-mode: home
+title: How to build and publish a documentation site with Thally
 ---
 
-<Hero
-  title="Build documentation around the reader"
-  subtitle="Start with a useful first result, organize what follows, and publish every format from one reviewable source."
-  primaryLabel="Get started"
-  primaryHref="/quickstart"
-  secondaryLabel="Publish your docs"
-  secondaryHref="/guides/create-a-site"
-/>
+Thally is a Git-based documentation platform. Your documentation lives in a
+GitHub repository, and Thally Cloud handles building and hosting your site.
 
-## Build the reader journey
+Thally also offers **Thally Track**, which monitors changes to connected code
+repositories and proposes corresponding documentation updates as pull
+requests. You can review and approve these changes before they're published.
 
-Begin with the task that brings most readers to your documentation, then make
-the next useful step obvious.
+In this article, I'll walk you through the steps to create and publish a
+documentation site using Thally Cloud. By the end, you'll have:
 
-<CardGroup cols="2">
-  <Card title="Write your quickstart" icon="party-horn" href="/quickstart">
-    Turn prerequisites, setup, one realistic task, and verification into a short path.
-  </Card>
-  <Card title="Organize your navigation" icon="grid-round" href="/customization">
-    Group related tasks and references around how people use your product.
-  </Card>
-  <Card title="Document your API" icon="code-simple" href="/api">
-    Replace `openapi.yaml` to publish browsable endpoint docs with a live playground.
-  </Card>
-  <Card title="Learn the Thally workflow" icon="wrench" href="/guides/create-a-site">
-    Create, publish, and update sites from the Cloud dashboard, the CLI, or your AI tools.
-  </Card>
-</CardGroup>
+- A live documentation site at `https://<your-address>.thally.app`.
+- A GitHub repository containing your documentation site's source files.
+- A local copy of the project that you can edit and preview before publishing
+  changes.
 
-## Publish from one source
+To see what a finished site looks like, check out the
+[Effect HTTP API documentation](https://effect-http-api.thally.app/) I built
+with Thally.
 
-Thally turns the same reviewed content into HTML, search, agent discovery files,
-Markdown mirrors, and a read-only MCP surface — so people and AI tools read the
-same, current answer. Add only the locales your readers need.
+## Prerequisites
 
-<Note type="info" title="Start with the product, not the template">
-  Replace this page with the questions, terminology, and workflows your readers
-  already use. Keep `docs.json` focused on the path between those tasks.
+You'll need the following:
+
+- A [GitHub](https://github.com/) account.
+- [Git](https://git-scm.com/downloads).
+- [Node.js](https://nodejs.org/en/download) 22.24 or later.
+
+## Build your documentation site
+
+Follow these steps to create a documentation site with Thally Cloud, add your
+content, and publish your changes.
+
+### Step 1: Create a site in Thally Cloud
+
+<Steps titleSize="p">
+
+<Step title="Sign in to Thally Cloud">
+
+Go to [Thally Cloud](https://app.thally.io/), create an account or sign in,
+and select **Create a site**.
+
+</Step>
+
+<Step title="Enter the site details">
+
+Under **Site details**, enter a **Site name**, an optional
+**One-line summary**, and your preferred **Thally address**. Thally checks
+whether the address is available.
+
+</Step>
+
+<Step title="Create the docs repository">
+
+Under **Docs source**, select **Create a new docs repository**. Choose your
+GitHub account and enter a **Repository name**. Thally will create a
+repository from its starter template to store your documentation site's
+source files. Leave **Private repository** enabled if you want a private
+repository, or turn it off to make it public. If prompted, install the Thally
+GitHub App and grant the required repository access.
+
+</Step>
+
+<Step title="Skip product sources">
+
+Under **Product sources**, select **Skip for now**. This article focuses on
+building and publishing a documentation site, so we won't cover configuring
+Thally Track.
+
+</Step>
+
+<Step title="Skip knowledge surfaces">
+
+Under **Knowledge surfaces**, select **Skip for now**.
+
+</Step>
+
+<Step title="Publish the site">
+
+Under **Review and publish**, review your selections and select
+**Publish site**.
+
+</Step>
+
+</Steps>
+
+Thally builds and deploys your documentation site, which may take a few
+minutes. Once publishing is complete, you'll find your site's URL under
+**Your site at a glance** in the Thally Cloud dashboard.
+
+Open the URL in your browser. You should see a documentation site containing
+Thally's starter content.
+
+Next, you'll run the site locally so you can replace the starter content with
+your own documentation.
+
+### Step 2: Add documentation pages
+
+To edit your documentation, first clone the GitHub repository that Thally
+created.
+
+Run the following commands:
+
+```bash
+git clone https://github.com/YOUR_ACCOUNT/YOUR_REPOSITORY.git
+cd YOUR_REPOSITORY
+npm install
+npm run dev
+```
+
+Replace `YOUR_ACCOUNT` and `YOUR_REPOSITORY` with your GitHub account and
+repository name before running the commands.
+
+Open [http://localhost:3040](http://localhost:3040) in your browser. You should
+see the documentation site with Thally's starter content.
+
+Thally stores documentation pages as MDX files in the `src/content/`
+directory. MDX lets you write content using Markdown and include React
+components, such as the built-in components Thally provides.
+
+Each page contains **frontmatter** and a body. Frontmatter is the metadata
+enclosed between two `---` delimiters at the beginning of the file. Thally
+requires a `title` and `description` in the frontmatter, while the body
+contains the documentation content.
+
+Let's replace the starter homepage with an introduction to Effect HTTP API.
+
+Open `src/content/introduction.mdx` and replace its contents with the
+following:
+
+```mdx title="src/content/introduction.mdx"
+---
+title: Effect HTTP API
+description: Build schema-first, type-safe HTTP APIs in TypeScript.
+---
+
+Effect HTTP API provides a schema-first, type-safe approach to building HTTP APIs in TypeScript.
+
+**Schema-first** means you define the shape of the data an endpoint accepts and returns before implementing its handler. A **handler** is the function that runs when a request matches an endpoint. It contains the endpoint's business logic or calls services that implement that logic.
+
+These schemas, together with the endpoint's HTTP method and path, form its API contract. The contract describes request parameters, successful responses, and expected errors.
+```
+
+Save the file, then stop the development server by pressing `Ctrl+C` in your
+terminal. Restart it using:
+
+```bash
+npm run dev
+```
+
+You should now see your new introduction page instead of Thally's starter
+content.
+
+<Note>
+In the Thally version used for this article, the development server caches
+MDX pages and doesn't automatically reflect changes to their content. If you
+edit a page, restart the development server to see the updated content.
 </Note>
+
+To add more documentation pages, create additional `.mdx` files inside
+`src/content/` and register them in `docs.json`, which controls the site's
+navigation. You can also update the site name and links in
+`src/data/site.ts`.
+
+For more information about creating pages, configuring navigation, and
+customizing your documentation site, refer to Thally's official guides:
+
+- [Create and edit pages](https://docs.thally.io/guides/writing-content):
+  Learn about frontmatter, code blocks, and built-in components.
+- [Organize your navigation](https://docs.thally.io/guides/configuring-navigation):
+  Configure navigation tabs, groups, and page order.
+- [Customize branding and theme](https://docs.thally.io/guides/branding-and-theming):
+  Customize colors, logos, and fonts.
+- [Troubleshooting](https://docs.thally.io/guides/troubleshooting): Find
+  solutions to common issues with your documentation site.
+
+### Step 3: Publish your changes
+
+Now that you've updated your documentation, you can publish those changes to
+your live site.
+
+Before publishing, run the following commands to check for errors:
+
+```bash
+npm run check
+npm run typecheck
+npm run build
+```
+
+These commands perform three checks:
+
+1. `npm run check` validates your documentation content, navigation, and
+   internal links.
+2. `npm run typecheck` checks your TypeScript code for errors.
+3. `npm run build` runs a local production build to catch potential build
+   errors.
+
+Once all three checks pass, commit and push your changes to GitHub:
+
+```bash
+git add src/content/introduction.mdx
+git commit -m "docs: update introduction"
+git push
+```
+
+Thally Cloud automatically builds and deploys your documentation site when you
+push changes to the connected production branch. You don't need to deploy the
+site manually.
+
+To check the deployment, open your site in
+[Thally Cloud](https://app.thally.io/) and navigate to **Deployments**. Once
+the deployment succeeds, open your live site's URL and verify that your
+updated introduction page is displayed.
+
+## Conclusion
+
+You've now learned how to create a documentation site with Thally Cloud, write
+documentation pages in MDX, and publish your changes through GitHub.
+
+Thally offers many more features beyond what I've covered here, including
+automated documentation updates with Thally Track. Explore the
+[official Thally documentation](https://docs.thally.io/) to learn more as you
+build out your site.
